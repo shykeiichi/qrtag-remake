@@ -1,0 +1,19 @@
+html, body {
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden !important;
+}
+
+.ms-sidebar {
+    padding-left: 300px;
+}
+
+.w-sidebar {
+    width: 280px;
+}
+
+@media screen and (max-width: 768px) {
+    .ms-sidebar {
+        padding-left: 0px;
+    }
+}
