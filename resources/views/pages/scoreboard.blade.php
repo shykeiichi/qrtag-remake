@@ -3,8 +3,8 @@
     ['!Poängtavla', '/scoreboard']
 ]])
 @section('main')
-<div class="d-flex flex-column col-md-9 col-sm-12 mx-auto">
-    <div class="px-4 py-5 my-5 text-center w-50 mx-auto">
+<div class="row col-md-9 col-sm-12 mx-auto">
+    <div class="px-4 py-5 my-5 text-center col-md-6 mx-auto">
         @if($ongoing)
             <h1 class="display-5 fw-bold text-body-emphasis">Poängtavlan för {{ $eventName }}</h1>
             <table class="table">
