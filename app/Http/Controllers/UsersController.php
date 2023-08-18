@@ -112,8 +112,10 @@ class UsersController extends Controller
         return redirect("/admin/users?success=Användare $username har skapats");
     }
     
+    // Kulla en person i det nuvarande eventet
     function tag(Request $request)
     {
+        // Kolla om en kod är angiven
         $secret = $request->post('secret') ?? $_GET['secret'] ?? null;
 
         if(is_null($secret))
@@ -121,7 +123,7 @@ class UsersController extends Controller
             return "Ingen kod angiven";
         }
 
-
+        // Kolla om ett event är igång för tillfället
         $ongoingEvent = DB::table('events')
             ->select('id', 'start_date', 'end_date', 'name')
             ->where('start_date', '<=', now())
@@ -134,6 +136,7 @@ class UsersController extends Controller
             return "Inget event är igång för tillfället";
         }
 
+        // Kolla om spelaren är vid liv så att man inte kan tagg någon när man är död
         $user = DB::table('event_users')->where([
             ['user_id', $_SESSION['qrtag']['id']],
             ['event_id', $ongoingEvent->id]
@@ -144,6 +147,7 @@ class UsersController extends Controller
             return "Du är inte vid liv i spelet";
         }
 
+        // Kolla hemlisen så att den faktiskt är för targeten
         $target = DB::table('event_users')
         ->join('users', 'users.id', '=', 'user_id')
         ->where([
@@ -156,6 +160,7 @@ class UsersController extends Controller
             return redirect('/?error=Du taggade fel person');
         }
 
+        // Sätt så att targeten är död
         DB::table('event_users')->where([
             ['user_id', $target->user_id],
             ['event_id', $ongoingEvent->id]
@@ -163,6 +168,7 @@ class UsersController extends Controller
             'is_alive' => false
         ]);
 
+        // Sätt spelarens nya target till den gamla targetens target
         DB::table('event_users')->where([
             ['user_id', $user->user_id],
             ['event_id', $ongoingEvent->id]
@@ -170,12 +176,14 @@ class UsersController extends Controller
             'target_id' => $target->target_id
         ]);
 
+        // Logga taggen så att man kan visa den i /scoreboards
         DB::table('event_tags')->insert([
             'user_id' => $user->user_id,
             'target_id' => $target->user_id,
             'event_id' => $ongoingEvent->id
         ]);
 
+        // Skicka en kill log i discorden
         $user = DB::table('event_users')
         ->join('users', 'users.id', '=', 'user_id')
         ->where([
@@ -185,6 +193,7 @@ class UsersController extends Controller
 
         if(isset($_ENV['DISCORD_WEBHOOK']) && $_ENV['DISCORD_WEBHOOK'] != "")
         {
+            // Kolla om spelaren har vunnit eller inte och sätt meddelandet följaktligen
             $playersLeft = DB::table('event_users')->where('event_id', $ongoingEvent->id)->where('is_alive', true)->count();
             if($user->user_id == $user->target_id || $playersLeft === 1)
             {
@@ -198,6 +207,7 @@ class UsersController extends Controller
                 $message = $user->display_name . " kullade " . $target->display_name . "!\nNu är det $playersLeft spelare kvar.";
             }
 
+            // Skicka meddelandet till discord genom deras webhook system
             $options = array(
                 'http' => array(
                     'header'  => "Content-type: application/x-www-form-urlencoded",
@@ -212,6 +222,7 @@ class UsersController extends Controller
         return redirect('/');
     }
 
+    // Kolla om en spelare är vid liv i det nuvarande eventet
     function alive(Request $request, $userId)
     {
         $ongoingEvent = DB::table('events')

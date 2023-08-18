@@ -284,6 +284,7 @@ class EventsController extends Controller
 
         $username = $request->post('username');
 
+        // Kolla så att användaren finns
         $user = DB::table('users')->where('username', $username)->first();
 
         if(is_null($user))
@@ -291,13 +292,15 @@ class EventsController extends Controller
             return redirect("/admin/events/$eventId?error=Användarnamnet du försökte lägga till finns inte");
         }
 
-        $alreadyJoined = DB::table('event_users')->where('user_id', $user->id)->first();
+        // Kolla så att man inte lägger in en användare som redan finns
+        $alreadyJoined = DB::table('event_users')->where([['user_id', $user->id], ['event_id', $eventId]])->first();
 
         if(!is_null($alreadyJoined))
         {
             return redirect("/admin/events/$eventId?error=Användaren du försöker lägga till finns redan");
         }
 
+        // Kolla så att det finns en användare att stoppa in vid
         $randomUser = DB::table('event_users')
             ->where('is_alive', true)
             ->where('event_id', $eventId)
@@ -310,6 +313,7 @@ class EventsController extends Controller
             return redirect("/admin/events/$eventId?error=Det finns ingen stans att lägga till användaren. Försök igen senare");
         }
 
+        // Stoppa in användaren vid randomuser
         DB::table('event_users')->insert([
             'user_id' => $user->id,
             'event_id' => $eventId,
@@ -335,6 +339,7 @@ class EventsController extends Controller
             return view('pages.home');
         }
 
+        // Kolla så att useridt gavs
         $userId = $request->post('user_id');
 
         if(is_null($userId))
@@ -342,6 +347,7 @@ class EventsController extends Controller
             return redirect("/admin/events/$eventId?error=Inget userid gavs.");
         }
 
+        // Kolla så att eventet finns och är igång
         $event = DB::table('events')
             ->select('id', 'start_date', 'end_date', 'name', 'winner')
             ->where('start_date', '<=', now())
@@ -355,6 +361,7 @@ class EventsController extends Controller
             return redirect("/admin/events/$eventId?error=Eventet måste existera och vara igång för att man ska kunna återuppliva.");
         }
 
+        // Kolla så att spelaren finns
         $eventUser = DB::table('event_users')
             ->where('user_id', $userId)
             ->where('event_id', $eventId)
@@ -365,11 +372,13 @@ class EventsController extends Controller
             return redirect("/admin/events/$eventId?error=Kunde $userId inte hitta en spelare med id:t i eventet.");
         }
 
+        // Kolla så att man inte återupplivar en levande användaren
         if($eventUser->is_alive)
         {
             return redirect("/admin/events/$eventId?error=Spelaren är redan vid liv.");
         }
 
+        // Hitta en spelare där man ska stoppa in den ny upplivade spelaren
         $randomUser = DB::table('event_users')
             ->where('is_alive', true)
             ->where('event_id', $eventId)
@@ -383,6 +392,7 @@ class EventsController extends Controller
             return redirect("/admin/events/$eventId?error=Det finns ingen stans att lägga till användaren. Försök igen senare");
         }
 
+        // Återuppliva användaren i databasen
         DB::table('event_users')
             ->where([
                 ['event_id', $eventId],
@@ -394,12 +404,14 @@ class EventsController extends Controller
                 'secret' => generateSecret()
             ]);
 
+        // Sätt den random spelaren att ha den ny upplivade spelaren som target
         DB::table('event_users')
             ->where('id', $randomUser->id)
             ->update([
                 'target_id' => $userId
             ]);
 
+        // Eventuellt att man stänger av att någon har vunnit
         DB::table('events')->update([
             'winner' => null
         ]);
@@ -425,7 +437,10 @@ class EventsController extends Controller
             return redirect("/admin/events/$eventId?error=Du kan inte återuppliva alla användare till ett event med mindre än 2 spelare.");
         }
 
+        // En loop som körs till alla spelare har en target som inte är dem själv
+        // Jag vet att det här kan teoretiskt sätt krasha hela hemsidan men ibland är 100% säker att ge resultat bättre än 100% inte krasha
         do {
+            // Få alla spelare och gör en kopia som är i en random ordning
             $userIds = DB::table('event_users')
                 ->where('event_id', $eventId)
                 ->pluck('user_id')
@@ -436,6 +451,7 @@ class EventsController extends Controller
 
             $targetIds = array_combine($userIds, $shuffledUserIds);
 
+            // Sätt alla target ids och annan nödvändig daata
             $updatedCount = 0;
             foreach ($targetIds as $userId => $targetId) {
                 DB::table('event_users')
@@ -446,6 +462,7 @@ class EventsController extends Controller
                 $updatedCount++;
             }
 
+            // Kolla om det inte finns några spelare där user_id == target_id annars kör om loopen
             $isShuffledCorrectly = true;
             foreach(DB::table('event_users')->where('event_id', $eventId)->get() as $user)
             {
@@ -456,6 +473,7 @@ class EventsController extends Controller
             }
         } while(!$isShuffledCorrectly);
 
+        // Skicka meddelande till discord webhooken om alla spelare har återupplivats för att inte skapa frågor senare om varför numrena ändras
         DB::table('events')->where('id', $eventId)->update(['winner' => null]);
 
         $options = array(
