@@ -36,7 +36,7 @@
         <p class="fs-4">Klass: <span class="blurred">TE00XX</span></p>
     </div>
     
-    <div class="d-flex flex-row justify-content-center">
+    <div class="d-flex flex-row justify-content-center" id="playfield">
         <div class="d-flex flex-column">
             <div class="mx-auto" style="width: max-content">
                 <div id="qrcode" class="w-0"></div>
@@ -45,10 +45,10 @@
                 <p class="fs-4">Din hemlis: {{ $user->secret }}</p>
             </div>
         </div>
-        <div class="ms-5">
-            <p class="fs-4">Om du blir kullad be kullaren att skanna qr koden eller eventuellt att dem skriver in din hemlis nedan</p>
+        <div class="ms-5" id="playfield-container">
+            <p class="fs-4">Om du blir kullad be kullaren att skanna qr koden eller eventuellt att de skriver in din hemlis nedan</p>
             <div>
-                <form class="p-4 p-md-5" data-bitwarden-watching="1" action="/api/users/tag" method="POST">
+                <form class="p-4 p-md-5 mx-auto" data-bitwarden-watching="1" action="/api/users/tag" method="POST">
                     @csrf 
     
                     <div class="form-floating mb-3">
@@ -75,5 +75,27 @@ function checkAlive() {
 }
 
 setInterval(checkAlive, 1000 * 10)
+
+
+// Function to check window size and toggle content
+function toggleContentBasedOnWindowSize() {
+    if (window.innerWidth < 768) {
+        document.getElementById('playfield').classList.remove('flex-row');
+        document.getElementById('playfield').classList.add('flex-column');
+
+        document.getElementById('playfield-container').classList.remove('ms-5');
+    } else {
+        document.getElementById('playfield').classList.remove('flex-column');
+        document.getElementById('playfield').classList.add('flex-row');
+
+        document.getElementById('playfield-container').classList.add('ms-5');
+    }
+}
+
+// Initial check on page load
+toggleContentBasedOnWindowSize();
+
+// Event listener for window resize
+window.addEventListener('resize', toggleContentBasedOnWindowSize);
 </script>
 @stop
