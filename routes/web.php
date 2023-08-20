@@ -183,7 +183,7 @@ Route::get('/scoreboard', function () {
         'players' => $players,
         'tags' => $tags
     ]);
-});
+})->middleware(VerifySession::class);;
 
 Route::prefix('admin')->group(function() {
     Route::get('/', function () {
@@ -211,21 +211,23 @@ Route::prefix('admin')->group(function() {
     })->middleware(VerifySession::class);
 
     Route::get('/events/{eventId}', function (Request $request, $eventId) {
-        $participants = DB::table('event_users')
-            ->select(
-                'event_users.id as id',
-                'users.display_name as display_name',
-                'users.class as class',
-                'event_users.target_id',
-                'event_users.user_id',
-                DB::raw('(SELECT display_name FROM users WHERE users.id = event_users.target_id) as target_display_name'),
-                'event_users.secret',
-                'event_users.is_alive',
-                DB::raw('(SELECT COUNT(*) FROM event_tags WHERE user_id = users.id AND target_id = event_users.target_id AND event_id = ' . $eventId . ') as tags')
-            )
-            ->join('users', 'event_users.user_id', '=', 'users.id')
-            ->where('event_users.event_id', $eventId)
-            ->get();
+        $participants = DB::select("
+            SELECT 
+                event_users.id as id,
+                users.display_name as display_name,
+                users.class as class,
+                event_users.target_id,
+                event_users.user_id,
+                (SELECT display_name FROM users WHERE users.id = event_users.target_id) as target_display_name,
+                event_users.secret,
+                event_users.is_alive,
+                COALESCE(COUNT(`event_tags`.`event_id`), 0) AS tag_count
+            FROM event_users
+            LEFT JOIN users ON event_users.user_id = users.id
+            LEFT JOIN `event_tags` ON `users`.`id` = `event_tags`.`user_id` AND `event_tags`.`event_id` = " . $eventId . "
+            WHERE event_users.event_id = " . $eventId . "
+            GROUP BY id, display_name, class, target_id, user_id, target_display_name, secret, is_alive
+        ");
 
         $event = DB::table('events')
             ->where('id', $eventId)

@@ -4,7 +4,8 @@
         ['!Event', '/admin/'],
         ['Användare', '/admin/users']
     ],
-    'titleSuffix' => 'Admin'
+    'titleSuffix' => 'Admin',
+    'nofooter' => true
 ])
 @section('main')
 <button class="btn btn-success position-fixed mt-2 ms-3" style="width: 150px" data-bs-toggle="modal" data-bs-target="#createEvent">

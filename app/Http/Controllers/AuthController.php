@@ -23,7 +23,7 @@ class AuthController extends Controller
         $ldap = ldap_connect('ldaps://ad.ssis.nu');
         if($ldap === false) // Skicka personen till hem sidan om ldapen är nere
         {
-            return view('pages.home', ['error' => 'Elev servern verkar vara nere. Kontakta ' . $_ENV['MAINTAINER_NAMN'] . '!']);
+            return view('pages.home', ['error' => 'Elev servern verkar vara nere. Kontakta ' . $_ENV['MAINTAINER_NAME'] . '!']);
         }
         $bind = ldap_bind($ldap, $username . "@ad.ssis.nu", $request->post('password'));
 
@@ -52,7 +52,7 @@ class AuthController extends Controller
 
         if($userInfo['count'] == 0)
         {
-            return view('pages.home', ['error' => 'Kunde inte hitta dig i elev servern. Är du inte en elev? Kontakta ' . $_ENV['MAINTAINER_NAMN'] . ' om du vill ha tillgång.']);
+            return view('pages.home', ['error' => 'Kunde inte hitta dig i elev servern. Är du inte en elev? Kontakta ' . $_ENV['MAINTAINER_NAME'] . ' om du vill ha tillgång.']);
         }
         $userInfo = $userInfo[0];
 

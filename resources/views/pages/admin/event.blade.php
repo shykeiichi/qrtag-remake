@@ -4,7 +4,8 @@
         ['!Event', '/admin/'],
         ['Användare', '/admin/users']
     ],
-    'titleSuffix' => 'Admin'
+    'titleSuffix' => 'Admin',
+    'nofooter' => true
 ])
 @section('main')
 <style>
@@ -65,6 +66,7 @@
                     <th scope="col">Hemlis</th>
                     <th scope="col">Mål</th>
                     <th scope="col">Vid liv</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -73,7 +75,7 @@
                         <th scope="row">{{ $user->id }}</th>
                         <td>{{ $user->display_name }}</td>
                         <td>{{ $user->class }}</td>
-                        <td>{{ $user->tags }}</td>
+                        <td>{{ $user->tag_count }}</td>
                         <td class="hide">{{ $user->secret }}</td>
                         <td class="hide">{{ $user->target_display_name }}</td>
                         @if($user->is_alive)
@@ -81,6 +83,20 @@
                         @else
                             <td>
                                 Nej
+                            </td>
+                        @endif
+                        @if($user->is_alive)
+                            <td>
+                                <form action="/api/events/{{ $eventId }}/kill" method="POST">
+                                    @method("PATCH")
+                                    <input type="hidden" id="custId" name="user_id" value="{{ $user->user_id }}">
+                                    <button class="btn btn-link">
+                                        Kill
+                                    </button>
+                                </form>
+                            </td>
+                        @else
+                            <td>
                                 <form action="/api/events/{{ $eventId }}/revive" method="POST">
                                     @method("PATCH")
                                     <input type="hidden" id="custId" name="user_id" value="{{ $user->user_id }}">

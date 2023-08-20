@@ -406,6 +406,91 @@ class EventsController extends Controller
         return redirect("/admin/events/$eventId?success=Återupplivade användaren");
     }
 
+    function killUser(Request $request, $eventId)
+    {
+        // Kolla om eleven är admin
+        if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
+        {
+            return view('pages.home');
+        }
+
+        // Kolla så att useridt gavs
+        $userId = $request->post('user_id');
+
+        if(is_null($userId))
+        {
+            return redirect("/admin/events/$eventId?error=Inget userid gavs.");
+        }
+
+        // Kolla så att eventet finns och är igång
+        $event = DB::table('events')
+            ->select('id', 'start_date', 'end_date', 'name', 'winner')
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>', now())
+            ->where('id', $eventId)
+            ->orderBy('start_date', 'asc')
+            ->first();
+
+        if(is_null($event))
+        {
+            return redirect("/admin/events/$eventId?error=Eventet måste existera och vara igång för att man ska kunna återuppliva.");
+        }
+
+        // Kolla så att spelaren finns
+        $eventUser = DB::table('event_users')
+            ->where('user_id', $userId)
+            ->where('event_id', $eventId)
+            ->first();
+
+        if(is_null($eventUser))
+        {
+            return redirect("/admin/events/$eventId?error=Kunde $userId inte hitta en spelare med id:t i eventet.");
+        }
+
+        // Kolla så att man inte mördar en död spelare
+        if(!$eventUser->is_alive)
+        {
+            return redirect("/admin/events/$eventId?error=Spelaren är redan död.");
+        }
+
+        // Gör så att den som har spelaren som ska mördas som target får spelaren som ska mördas target
+        DB::table('event_users')
+            ->where('target_id', $userId)
+            ->update([
+                'target_id' => $eventUser->target_id
+            ]);
+
+        // Sätt spelaren till död
+        DB::table('event_users')
+            ->where('user_id', $userId)
+            ->update([
+                'is_alive' => false
+            ]);
+
+        $playersLeft = DB::table('event_users')->where('event_id', $eventId)->where('is_alive', true)->count();
+        if($playersLeft === 1)
+        {
+            $lastAlivePlayer = DB::table('event_users')->where('event_id', $eventId)->where('is_alive', true)->first();
+            DB::table('events')->where('id', $eventId)->update([
+                'winner' => $lastAlivePlayer->id
+            ]);
+
+            $message = $lastAlivePlayer->display_name . " har vunnit " . $event->name . "! Grattis!";
+
+            $options = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded",
+                    'method'  => 'POST',
+                    'content' => http_build_query(array('content' => $message))
+                )
+            );
+            $context  = stream_context_create($options);
+            $result = file_get_contents($_ENV['DISCORD_WEBHOOK'], false, $context);
+        }
+
+        return redirect("/admin/events/$eventId?success=Dödade användaren");
+    }
+
     function reviveAll(Request $request, $eventId) {
         // Kolla om eleven är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])

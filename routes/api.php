@@ -30,6 +30,7 @@ Route::post('/events/{eventId}/targets', [EventsController::class, 'giveTargets'
 Route::post('/events/{eventId}/players', [EventsController::class, 'addPlayer'])->where('eventId', '[0-9]+')->middleware(VerifySession::class);
 Route::patch('/events/{eventId}/change-target', [EventsController::class, 'changeTarget'])->where('eventId', '[0-9]+')->middleware(VerifySession::class);
 Route::patch('/events/{eventId}/revive', [EventsController::class, 'reviveUser'])->where('eventId', '[0-9]+')->middleware(VerifySession::class);
+Route::patch('/events/{eventId}/kill', [EventsController::class, 'killUser'])->where('eventId', '[0-9]+')->middleware(VerifySession::class);
 Route::patch('/events/{eventId}/revive-all', [EventsController::class, 'reviveAll'])->where('eventId', '[0-9]+')->middleware(VerifySession::class);
 
 Route::post('/users', [UsersController::class, 'store'])->middleware(VerifySession::class);

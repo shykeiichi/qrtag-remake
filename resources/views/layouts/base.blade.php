@@ -18,6 +18,18 @@
         @include('includes.header', ['items' => $header])
         <div class="row ms-sidebar">
             @yield('main')
+
+            @if(!isset($nofooter) || !$nofooter)
+                <div class="d-flex flex-column col-md-9 col-sm-12 mx-auto">
+                    <div class="py-5 mt-5 text-center w-100">
+                        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-4 border-top">
+                            <div class="col-md-4 d-flex align-items-center w-100">
+                                <span class="text-body-secondary">Rapportera eventuella buggar till {{ $_ENV['MAINTAINER_NAME'] }}</span>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
