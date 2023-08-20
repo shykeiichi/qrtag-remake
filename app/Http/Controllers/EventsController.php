@@ -88,47 +88,34 @@ class EventsController extends Controller
             return view('pages.home');
         }
         
-        $isShuffledCorrectly = false;
-
-        $entries = DB::table('event_users')
+        $userIds = DB::table('event_users')
             ->where('event_id', $eventId)
-            ->count();
+            ->pluck('user_id')
+            ->toArray();
 
-        if($entries < 2)
+        // Du kan inte ha dig själv som target
+        if($userIds < 2)
         {
             return redirect("/admin/events/$eventId?error=Du kan inte tilldela mål till ett event med mindre än 2 spelare.");
         }
 
-        do {
-            $userIds = DB::table('event_users')
-                ->where('event_id', $eventId)
-                ->pluck('user_id')
-                ->toArray();
+        // Ge alla targets genom att randomiza listan och sen ge varje spelare nästa person i listan som sin target förutom sista som får första i listan
+        shuffle($userIds);
 
-            $shuffledUserIds = $userIds;
-            shuffle($shuffledUserIds);
-
-            $targetIds = array_combine($userIds, $shuffledUserIds);
-
-            $updatedCount = 0;
-            foreach ($targetIds as $userId => $targetId) {
-                DB::table('event_users')
-                    ->where('event_id', $eventId)
-                    ->where('user_id', $userId)
-                    ->update(['target_id' => $targetId, 'secret' => generateSecret()]);
-
-                $updatedCount++;
-            }
-
-            $isShuffledCorrectly = true;
-            foreach(DB::table('event_users')->where('event_id', $eventId)->get() as $user)
+        for($i = 0; $i < count($userIds); $i++)
+        {
+            $userId = $userIds[$i];
+            if(count($userIds) > $i + 1)
             {
-                if($user->target_id == $user->user_id)
-                {
-                    $isShuffledCorrectly = false;
-                }
+                $targetId = $userIds[$i + 1];
+            } else {
+                $targetId = $userIds[0];
             }
-        } while(!$isShuffledCorrectly);
+            DB::table('event_users')
+                ->where('event_id', $eventId)
+                ->where('user_id', $userId)
+                ->update(['target_id' => $targetId, 'secret' => generateSecret()]);
+        }
 
         DB::table('events')->where('id', $eventId)->update(['targets_assigned' => true]);
 
@@ -426,52 +413,34 @@ class EventsController extends Controller
             return view('pages.home');
         }
         
-        $isShuffledCorrectly = false;
-
-        $entries = DB::table('event_users')
+        $userIds = DB::table('event_users')
             ->where('event_id', $eventId)
-            ->count();
+            ->pluck('user_id')
+            ->toArray();
 
-        if($entries < 2)
+        // Du kan inte ha dig själv som target
+        if($userIds < 2)
         {
-            return redirect("/admin/events/$eventId?error=Du kan inte återuppliva alla användare till ett event med mindre än 2 spelare.");
+            return redirect("/admin/events/$eventId?error=Du kan inte tilldela mål till ett event med mindre än 2 spelare.");
         }
 
-        // En loop som körs till alla spelare har en target som inte är dem själv
-        // Jag vet att det här kan teoretiskt sätt krasha hela hemsidan men ibland är 100% säker att ge resultat bättre än 100% inte krasha
-        do {
-            // Få alla spelare och gör en kopia som är i en random ordning
-            $userIds = DB::table('event_users')
-                ->where('event_id', $eventId)
-                ->pluck('user_id')
-                ->toArray();
-
-            $shuffledUserIds = $userIds;
-            shuffle($shuffledUserIds);
-
-            $targetIds = array_combine($userIds, $shuffledUserIds);
-
-            // Sätt alla target ids och annan nödvändig daata
-            $updatedCount = 0;
-            foreach ($targetIds as $userId => $targetId) {
-                DB::table('event_users')
-                    ->where('event_id', $eventId)
-                    ->where('user_id', $userId)
-                    ->update(['target_id' => $targetId, 'secret' => generateSecret(), 'is_alive' => true]);
-
-                $updatedCount++;
-            }
-
-            // Kolla om det inte finns några spelare där user_id == target_id annars kör om loopen
-            $isShuffledCorrectly = true;
-            foreach(DB::table('event_users')->where('event_id', $eventId)->get() as $user)
+        // Ge alla targets genom att randomiza listan och sen ge varje spelare nästa person i listan som sin target förutom sista som får första i listan
+        shuffle($userIds);
+        
+        for($i = 0; $i < count($userIds); $i++)
+        {
+            $userId = $userIds[$i];
+            if(count($userIds) > $i + 1)
             {
-                if($user->target_id == $user->user_id)
-                {
-                    $isShuffledCorrectly = false;
-                }
+                $targetId = $userIds[$i + 1];
+            } else {
+                $targetId = $userIds[0];
             }
-        } while(!$isShuffledCorrectly);
+            DB::table('event_users')
+                ->where('event_id', $eventId)
+                ->where('user_id', $userId)
+                ->update(['target_id' => $targetId, 'secret' => generateSecret(), 'is_alive' => true]);
+        }
 
         // Skicka meddelande till discord webhooken om alla spelare har återupplivats för att inte skapa frågor senare om varför numrena ändras
         DB::table('events')->where('id', $eventId)->update(['winner' => null]);
