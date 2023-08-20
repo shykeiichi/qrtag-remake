@@ -24,7 +24,7 @@
                     <div class="py-5 mt-5 text-center w-100">
                         <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-4 border-top">
                             <div class="col-md-4 d-flex align-items-center w-100">
-                                <span class="text-body-secondary">Rapportera eventuella buggar till {{ $_ENV['MAINTAINER_NAME'] }}</span>
+                                <span class="text-body-secondary px-2">Rapportera eventuella buggar till {{ $_ENV['MAINTAINER_NAME'] }}</span>
                             </div>
                         </footer>
                     </div>

@@ -183,6 +183,22 @@ Route::get('/scoreboard', function () {
         'players' => $players,
         'tags' => $tags
     ]);
+})->middleware(VerifySession::class);
+
+
+Route::get('/profile', function () {
+    if(!isset($_SESSION['qrtag']))
+    {
+        return redirect("/");
+    }
+
+    $tags = DB::table('event_tags')->where([
+        ['user_id', $_SESSION['qrtag']['id']]
+    ])->count();
+
+    return view('pages.profile', [
+        "tags" => $tags
+    ]);
 })->middleware(VerifySession::class);;
 
 Route::prefix('admin')->group(function() {
