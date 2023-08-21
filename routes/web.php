@@ -13,30 +13,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/a', function () {
-    session_start();
-
-    $_SESSION['qrtag']['username'] = "22widi";
-    $_SESSION['qrtag']['id'] = 1;
-    $_SESSION['qrtag']['is_admin'] = 1;
-    $_SESSION['qrtag']['name'] = "Willem Dinkelspiel";
-    $_SESSION['qrtag']['class'] = "TE22B";
-    
-    return redirect("/");
-});
-
-Route::get('/b', function () {
-    session_start();
-
-    $_SESSION['qrtag']['username'] = "22hust";
-    $_SESSION['qrtag']['id'] = 2;
-    $_SESSION['qrtag']['is_admin'] = 0;
-    $_SESSION['qrtag']['name'] = "Hugo Stjerngren";
-    $_SESSION['qrtag']['class'] = "TE22D";
-    
-    return redirect("/");
-});
-
 
 Route::get('/', function () {
     if(!isset($_SESSION['qrtag']))
