@@ -11,7 +11,7 @@
   
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="{{ $_ENV['APP_URL'] }}/css/app.css">
 </head>
 <body data-bs-theme="dark">
     <div class="d-flex flex-column h-100">
