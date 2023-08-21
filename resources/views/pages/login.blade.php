@@ -18,11 +18,11 @@
                     <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
                     <label for="password">Password</label>
                 </div>
-                <div class="checkbox mb-3">
+                {{-- <div class="checkbox mb-3">
                     <label>
                         <input type="checkbox" value="remember-me"> Kom ihåg mig
                     </label>
-                </div>
+                </div> --}}
                 <button class="w-100 btn btn-lg btn-primary" type="submit">Logga in</button>
                 @isset($error)
                     <div class="alert alert-danger mt-3" role="alert">
