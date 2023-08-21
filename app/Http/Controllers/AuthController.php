@@ -72,7 +72,7 @@ class AuthController extends Controller
         // Skapa eleven i databasen        
         $userId = DB::table('users')->insertGetId([
             'username' => $username,
-            'name' => $name,
+            'display_name' => $name,
             'class' => $class,
             'is_admin' => 0
         ]);
