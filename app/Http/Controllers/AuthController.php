@@ -25,7 +25,7 @@ class AuthController extends Controller
         {
             return view('pages.home', ['error' => 'Elev servern verkar vara nere. Kontakta ' . $_ENV['MAINTAINER_NAME'] . '!']);
         }
-        $bind = ldap_bind($ldap, $username . "@ad.ssis.nu", $request->post('password'));
+        $bind = @ldap_bind($ldap, $username . "@ad.ssis.nu", $request->post('password'));
 
         if(!$bind)
         {
