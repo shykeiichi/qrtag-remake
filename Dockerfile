@@ -1,6 +1,6 @@
 FROM php:8.2-apache-bullseye
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get install -y libc-client-dev libkrb5-dev nmap inetutils-ping net-tools libpng-dev libxml2-dev libxslt1-dev libcurl4-openssl-dev zip unzip git libfreetype6-dev libjpeg62-turbo-dev libpng-dev && rm -r /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libldap2-dev libc-client-dev libkrb5-dev nmap inetutils-ping net-tools libpng-dev libxml2-dev libxslt1-dev libcurl4-openssl-dev zip unzip git libfreetype6-dev libjpeg62-turbo-dev libpng-dev && rm -r /var/lib/apt/lists/*
 RUN a2enmod rewrite
 RUN docker-php-ext-install pdo_mysql gettext xsl pcntl ldap
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
