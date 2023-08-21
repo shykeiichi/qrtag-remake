@@ -15,4 +15,3 @@ EXPOSE 8080
 WORKDIR /var/www/html
 COPY . /var/www/html/
 RUN mkdir /.config && chmod 777 /.config && chmod 777 /var/www/html/storage && chmod 777 /var/www/html/public/ && ls -la public && composer install --no-dev && npm install && npm run build && chmod 755 /var/www/html/public/
-RUN php artisan key:generate
