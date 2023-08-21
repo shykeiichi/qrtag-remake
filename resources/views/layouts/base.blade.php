@@ -12,6 +12,8 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <link rel="stylesheet" href="/css/app.css">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <title>QRTag</title>
 </head>
 <body data-bs-theme="dark">
     <div class="d-flex flex-column h-100">
