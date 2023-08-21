@@ -123,6 +123,11 @@ class UsersController extends Controller
             return "Ingen kod angiven";
         }
 
+        if(!isset($_SESSION['qrtag']['id']))
+        {
+            return redirect("/");
+        }
+
         // Kolla om ett event är igång för tillfället
         $ongoingEvent = DB::table('events')
             ->select('id', 'start_date', 'end_date', 'name')

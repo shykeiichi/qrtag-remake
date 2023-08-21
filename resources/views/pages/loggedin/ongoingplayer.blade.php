@@ -62,10 +62,10 @@
     </div>
 </div>
 <script>
-new QRCode(document.getElementById("qrcode"), "/api/users/tag?secret={{ $user->secret }}")
+new QRCode(document.getElementById("qrcode"), "{{ $_ENV['APP_URL'] }}/api/users/tag?secret={{ $user->secret }}")
 
 function checkAlive() {
-    fetch('/api/users/{{ $user->user_id }}/alive', {
+    fetch('{{ $_ENV['APP_URL'] }}/api/users/{{ $user->user_id }}/alive', {
         credentials: "same-origin"
     })
     .then(resp => resp.json())
