@@ -22,7 +22,7 @@ class EventsController extends Controller
         // Kolla om eleven är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
 
 
@@ -71,7 +71,7 @@ class EventsController extends Controller
           // Kolla om eleven är admin
           if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
           {
-              return view('pages.home');
+              return view('pages.login');
           }
 
           DB::table('event_users')->where('event_id', $eventId)->delete();
@@ -85,7 +85,7 @@ class EventsController extends Controller
         // Kolla om eleven är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
         
         $userIds = DB::table('event_users')
@@ -216,7 +216,7 @@ class EventsController extends Controller
         // Kolla om eleven är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
 
 
@@ -266,7 +266,7 @@ class EventsController extends Controller
         // Kolla om eleven är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
 
         $username = $request->post('username');
@@ -323,7 +323,7 @@ class EventsController extends Controller
         // Kolla om eleven är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
 
         // Kolla så att useridt gavs
@@ -411,7 +411,7 @@ class EventsController extends Controller
         // Kolla om eleven är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
 
         // Kolla så att useridt gavs
@@ -495,7 +495,7 @@ class EventsController extends Controller
         // Kolla om eleven är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
         
         $userIds = DB::table('event_users')

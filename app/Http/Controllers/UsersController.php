@@ -15,7 +15,7 @@ class UsersController extends Controller
         // Kolla om användare är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
 
         $username = $request->post('username');
@@ -80,7 +80,7 @@ class UsersController extends Controller
         // Kolla om användare är admin
         if(!isset($_SESSION['qrtag']['is_admin']) || !$_SESSION['qrtag']['is_admin'])
         {
-            return view('pages.home');
+            return view('pages.login');
         }
 
         // Ta datan och kolla så att alla gavs
