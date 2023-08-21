@@ -8,6 +8,11 @@
     'nofooter' => true
 ])
 @section('main')
+<style>
+html, body {
+    overflow-x: scroll !important;
+}
+</style>
 <button class="btn btn-success position-fixed mt-2 ms-3" style="width: 150px" data-bs-toggle="modal" data-bs-target="#createUser">
     Skapa användare
 </button>

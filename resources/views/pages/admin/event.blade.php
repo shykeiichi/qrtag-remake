@@ -17,6 +17,10 @@
 	color: white !important;
 	text-shadow: 0 0 0px #fff !important;
 }
+
+html, body {
+    overflow-x: scroll !important;
+}
 </style>
 <div class="d-flex flex-column col-md-9 col-sm-12 mx-auto">
     <div class="px-4 py-5 my-5 text-center w-100 d-flex flex-column">
