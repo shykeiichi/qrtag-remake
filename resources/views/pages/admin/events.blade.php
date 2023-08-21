@@ -1,7 +1,7 @@
 @extends('layouts.base', 
 [
     'header' => [
-        ['!Event', '/admin/'],
+        ['!Event', '/admin'],
         ['Användare', '/admin/users']
     ],
     'titleSuffix' => 'Admin',
