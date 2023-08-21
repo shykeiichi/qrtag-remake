@@ -470,7 +470,7 @@ class EventsController extends Controller
         $playersLeft = DB::table('event_users')->where('event_id', $eventId)->where('is_alive', true)->count();
         if($playersLeft === 1)
         {
-            $lastAlivePlayer = DB::table('event_users')->where('event_id', $eventId)->where('is_alive', true)->first();
+            $lastAlivePlayer = DB::table('event_users')->join('users', 'users.id', '=', 'user_id')->where('event_id', $eventId)->where('is_alive', true)->first();
             DB::table('events')->where('id', $eventId)->update([
                 'winner' => $lastAlivePlayer->id
             ]);
