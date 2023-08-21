@@ -38,10 +38,10 @@ class AuthController extends Controller
         if($user)
         {
             $_SESSION['qrtag']['username'] = $username;
-            $_SESSION['qrtag']['id'] = $user['id'];
-            $_SESSION['qrtag']['is_admin'] = $user['is_admin'];
-            $_SESSION['qrtag']['name'] = $user['name'];
-            $_SESSION['qrtag']['class'] = $user['class'];
+            $_SESSION['qrtag']['id'] = $user->id;
+            $_SESSION['qrtag']['is_admin'] = $user->is_admin;
+            $_SESSION['qrtag']['name'] = $user->display_name;
+            $_SESSION['qrtag']['class'] = $user->class;
 
             return redirect('/');
         }
