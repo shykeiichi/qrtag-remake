@@ -141,7 +141,7 @@ spec:
     insecureEdgeTerminationPolicy: Redirect
 ```
 
-## Databas
+### Databas
 
 Skapa en databas deployment under `Workloads`>`Deployments`>`Create Deployment`>`YAML view`
 ```yaml
@@ -236,7 +236,7 @@ spec:
       storage: 5Gi
 ```
 
-## Frivillig PHPMyAdmin
+### Frivillig PHPMyAdmin
 
 Skapa en ny deployment under `Workloads`>`Deployments`>`Create Deployment`>`YAML view` för phpmyadmin
 ```yaml
@@ -310,6 +310,6 @@ spec:
     targetPort: 8080
 ```
 
-## Grattis
+### Grattis
 
-Nu borde alltid funka som det ska
+Nu borde alltid funka som det ska!
